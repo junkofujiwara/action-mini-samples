@@ -1,0 +1,31 @@
+name: View Acion Job Log
+on:
+  workflow_call:
+    inputs:
+      repo_name:
+        required: true
+        type: string
+      run_id:
+        required: true
+        type: string
+      job_name:
+        required: true
+        type: string
+    secrets:
+      token:
+        required: true
+  
+jobs:
+  view-action-job-log:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "view action job log"
+        run: |
+          echo 'log for job: ${{ inputs.job_name }}' 
+          job_url="https://api.github.com/repos/${{ inputs.repo_name }}/actions/runs/${{ inputs.run_id }}/jobs"
+          job_id=$(curl -s -H "Authorization: token ${{ secrets.token }}" $job_url | jq -r '.jobs[] | select(.name == "${{ inputs.job_name }}") | .id')
+          log_url="https://api.github.com/repos/${{ inputs.repo_name }}/actions/jobs/$job_id/logs"
+          result=$(curl -L -s -H "Authorization: token ${{ secrets.token }}" $log_url -o eventlog.txt)
+          echo '-----'
+          cat eventlog.txt
+          echo '-----'

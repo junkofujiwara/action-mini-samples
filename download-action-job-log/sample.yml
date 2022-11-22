@@ -1,0 +1,21 @@
+name: call download-action-job-log
+
+on:
+  workflow_dispatch
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "sample"
+        run: |
+          echo "hello world"
+  job2:
+    needs: job1
+    uses: <PATH>/download-action-job-log.yml@main
+    with:
+      repo_name: $GITHUB_REPOSITORY
+      run_id: $GITHUB_RUN_ID
+      job_name: "job1"
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}

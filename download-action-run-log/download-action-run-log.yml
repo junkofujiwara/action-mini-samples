@@ -1,0 +1,22 @@
+name: download workflow log
+
+on:
+  workflow_run:
+    workflows: [<YOUR WORKFLOW>]
+    types:
+      - completed
+      
+jobs:
+  download-workflow-run-log:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo 'downloading workflow run logs'
+          log_url=${{ github.event.workflow_run.logs_url }}
+          command=$(curl -L -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" $log_url -o eventlog.zip)
+      - name: Upload result
+        uses: actions/upload-artifact@v3
+        with:
+          name: eventlog
+          path: eventlog.zip
+          
